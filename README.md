@@ -1,4 +1,4 @@
-url : file:///C:/Users/tabin/eclipse-workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/calculator/index.html
+
 
 # Scientific Calculator (HTML, CSS, JavaScript)
 
