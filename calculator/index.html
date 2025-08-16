@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .toggle-btn:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .toggle-btn:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .toggle-btn.active {
+            background: #3498db;
+        }
+
+        .toggle-btn:hover {
+            background: #2980b9;
+        }
+
+        .display {
+            background: #2c3e50;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-align: right;
+            padding: 25px 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .buttons {
+            display: grid;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .buttons.basic {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .buttons.scientific {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .btn-scientific {
+            background: #9b59b6;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .btn-scientific:hover {
+            background: #8e44ad;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            height: 70px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-number {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-number:hover {
+            background: #d5dbdb;
+        }
+
+        .btn-operator {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-operator:hover {
+            background: #2980b9;
+        }
+
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #c0392b;
+        }
+
+        .btn-equals {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-equals:hover {
+            background: #229954;
+        }
+
+        .btn-zero {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .calculator {
+                max-width: 500px;
+            }
+            
+            .buttons.scientific {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .btn-scientific {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 20px;
+                max-width: 350px;
+            }
+
+            .display {
+                font-size: 2rem;
+                padding: 20px 15px;
+                min-height: 70px;
+            }
+
+            .btn {
+                height: 60px;
+                font-size: 1.1rem;
+            }
+
+            .buttons {
+                gap: 12px;
+            }
+            
+            .buttons.scientific {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .btn-scientific {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .calculator {
+                padding: 15px;
+            }
+
+            .display {
+                font-size: 1.8rem;
+                padding: 15px;
+                min-height: 60px;
+            }
+
+            .btn {
+                height: 55px;
+                font-size: 1rem;
+            }
+
+            .buttons {
+                gap: 10px;
+            }
+            
+            .btn-scientific {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="mode-toggle">
+            <button class="toggle-btn active" onclick="switchMode('basic')">Basic</button>
+            <button class="toggle-btn" onclick="switchMode('scientific')">Scientific</button>
+        </div>
+        <div class="display" id="display">0</div>
+        <div class="buttons basic" id="buttons">
+            <!-- Buttons will be dynamically generated -->
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '0';
+        let shouldResetDisplay = false;
+        let isRadianMode = true;
+        let currentMode = 'basic';
+
+        const basicButtons = [
+            ['C', 'btn-clear', 'clearDisplay()'],
+            ['⌫', 'btn-clear', 'deleteLast()'],
+            ['/', 'btn-operator', "appendToDisplay('/')"],
+            ['×', 'btn-operator', "appendToDisplay('*')"],
+            ['7', 'btn-number', "appendToDisplay('7')"],
+            ['8', 'btn-number', "appendToDisplay('8')"],
+            ['9', 'btn-number', "appendToDisplay('9')"],
+            ['-', 'btn-operator', "appendToDisplay('-')"],
+            ['4', 'btn-number', "appendToDisplay('4')"],
+            ['5', 'btn-number', "appendToDisplay('5')"],
+            ['6', 'btn-number', "appendToDisplay('6')"],
+            ['+', 'btn-operator', "appendToDisplay('+')"],
+            ['1', 'btn-number', "appendToDisplay('1')"],
+            ['2', 'btn-number', "appendToDisplay('2')"],
+            ['3', 'btn-number', "appendToDisplay('3')"],
+            ['=', 'btn-equals', 'calculate()'],
+            ['0', 'btn-number btn-zero', "appendToDisplay('0')"],
+            ['.', 'btn-number', "appendToDisplay('.')"]
+        ];
+
+        const scientificButtons = [
+            ['C', 'btn-clear', 'clearDisplay()'],
+            ['⌫', 'btn-clear', 'deleteLast()'],
+            ['(', 'btn-operator', "appendToDisplay('(')"],
+            [')', 'btn-operator', "appendToDisplay(')')"],
+            ['/', 'btn-operator', "appendToDisplay('/')"],
+            ['×', 'btn-operator', "appendToDisplay('*')"],
+            
+            ['sin', 'btn-scientific', 'scientificFunction("sin")'],
+            ['cos', 'btn-scientific', 'scientificFunction("cos")'],
+            ['tan', 'btn-scientific', 'scientificFunction("tan")'],
+            ['7', 'btn-number', "appendToDisplay('7')"],
+            ['8', 'btn-number', "appendToDisplay('8')"],
+            ['9', 'btn-number', "appendToDisplay('9')"],
+            
+            ['ln', 'btn-scientific', 'scientificFunction("ln")'],
+            ['log', 'btn-scientific', 'scientificFunction("log")'],
+            ['√', 'btn-scientific', 'scientificFunction("sqrt")'],
+            ['4', 'btn-number', "appendToDisplay('4')"],
+            ['5', 'btn-number', "appendToDisplay('5')"],
+            ['6', 'btn-number', "appendToDisplay('6')"],
+            
+            ['x²', 'btn-scientific', 'scientificFunction("square")'],
+            ['xʸ', 'btn-scientific', "appendToDisplay('^')"],
+            ['π', 'btn-scientific', 'scientificFunction("pi")'],
+            ['1', 'btn-number', "appendToDisplay('1')"],
+            ['2', 'btn-number', "appendToDisplay('2')"],
+            ['3', 'btn-number', "appendToDisplay('3')"],
+            
+            ['e', 'btn-scientific', 'scientificFunction("e")'],
+            ['!', 'btn-scientific', 'scientificFunction("factorial")'],
+            ['±', 'btn-scientific', 'toggleSign()'],
+            ['0', 'btn-number', "appendToDisplay('0')"],
+            ['.', 'btn-number', "appendToDisplay('.')"],
+            ['-', 'btn-operator', "appendToDisplay('-')"],
+            
+            ['Rad/Deg', 'btn-scientific', 'toggleAngleMode()'],
+            ['=', 'btn-equals', 'calculate()'],
+            ['+', 'btn-operator', "appendToDisplay('+')"]
+        ];
+
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+
+        function appendToDisplay(value) {
+            if (shouldResetDisplay) {
+                currentInput = '';
+                shouldResetDisplay = false;
+            }
+            
+            if (currentInput === '0' && value !== '.') {
+                currentInput = value;
+            } else {
+                currentInput += value;
+            }
+            
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '0';
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            if (currentInput !== '0') {
+                if (currentInput.startsWith('-')) {
+                    currentInput = currentInput.substring(1);
+                } else {
+                    currentInput = '-' + currentInput;
+                }
+                updateDisplay();
+            }
+        }
+
+        function toggleAngleMode() {
+            isRadianMode = !isRadianMode;
+            // Update button text to show current mode
+            const button = document.querySelector('[onclick="toggleAngleMode()"]');
+            if (button) {
+                button.textContent = isRadianMode ? 'Rad' : 'Deg';
+            }
+        }
+
+        function scientificFunction(func) {
+            try {
+                let value = parseFloat(currentInput);
+                let result;
+
+                switch(func) {
+                    case 'sin':
+                        result = Math.sin(isRadianMode ? value : value * Math.PI / 180);
+                        break;
+                    case 'cos':
+                        result = Math.cos(isRadianMode ? value : value * Math.PI / 180);
+                        break;
+                    case 'tan':
+                        result = Math.tan(isRadianMode ? value : value * Math.PI / 180);
+                        break;
+                    case 'ln':
+                        result = Math.log(value);
+                        break;
+                    case 'log':
+                        result = Math.log10(value);
+                        break;
+                    case 'sqrt':
+                        result = Math.sqrt(value);
+                        break;
+                    case 'square':
+                        result = value * value;
+                        break;
+                    case 'pi':
+                        result = Math.PI;
+                        break;
+                    case 'e':
+                        result = Math.E;
+                        break;
+                    case 'factorial':
+                        result = factorial(Math.floor(value));
+                        break;
+                }
+
+                if (!isFinite(result)) {
+                    currentInput = 'Error';
+                } else {
+                    currentInput = parseFloat(result.toFixed(10)).toString();
+                }
+            } catch (error) {
+                currentInput = 'Error';
+            }
+            
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        function factorial(n) {
+            if (n < 0 || n > 170) return NaN; // Prevent overflow
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        function calculate() {
+            try {
+                let expression = currentInput
+                    .replace(/×/g, '*')
+                    .replace(/\^/g, '**')
+                    .replace(/π/g, Math.PI)
+                    .replace(/e/g, Math.E);
+                
+                // Enhanced validation for scientific operations
+                if (/^[0-9+\-*/.()^π e ]+$/.test(expression.replace(/\*\*/g, '^'))) {
+                    let result = eval(expression);
+                    
+                    if (!isFinite(result)) {
+                        currentInput = 'Error';
+                    } else {
+                        currentInput = parseFloat(result.toFixed(10)).toString();
+                    }
+                } else {
+                    currentInput = 'Error';
+                }
+            } catch (error) {
+                currentInput = 'Error';
+            }
+            
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const buttonsContainer = document.getElementById('buttons');
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            
+            // Update toggle button states
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Clear buttons container
+            buttonsContainer.innerHTML = '';
+            
+            // Update container class
+            buttonsContainer.className = `buttons ${mode}`;
+            
+            // Generate buttons based on mode
+            const buttons = mode === 'basic' ? basicButtons : scientificButtons;
+            
+            buttons.forEach(([text, className, onclick]) => {
+                const button = document.createElement('button');
+                button.className = `btn ${className}`;
+                button.textContent = text;
+                button.setAttribute('onclick', onclick);
+                
+                // Special handling for zero button in basic mode
+                if (text === '0' && mode === 'basic') {
+                    button.style.gridColumn = 'span 2';
+                }
+                
+                buttonsContainer.appendChild(button);
+            });
+        }
+
+        // Initialize with basic mode
+        document.addEventListener('DOMContentLoaded', function() {
+            switchMode('basic');
+        });
+
+        // Enhanced keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            
+            if (key >= '0' && key <= '9') {
+                appendToDisplay(key);
+            } else if (key === '.') {
+                appendToDisplay('.');
+            } else if (key === '+') {
+                appendToDisplay('+');
+            } else if (key === '-') {
+                appendToDisplay('-');
+            } else if (key === '*') {
+                appendToDisplay('*');
+            } else if (key === '/') {
+                event.preventDefault();
+                appendToDisplay('/');
+            } else if (key === '(' || key === ')') {
+                appendToDisplay(key);
+            } else if (key === '^') {
+                appendToDisplay('^');
+            } else if (key === 'Enter' || key === '=') {
+                calculate();
+            } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                clearDisplay();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97018355805c7a2a',t:'MTc1NTM1MzQwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
