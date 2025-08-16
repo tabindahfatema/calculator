@@ -1,4 +1,4 @@
-url : elaborate-macaron-452cb9.netlify.app
+URL : https://responsivecalculator27.netlify.app
 
 # Scientific Calculator (HTML, CSS, JavaScript)
 
